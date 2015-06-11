@@ -161,6 +161,44 @@ class MetaTest extends PHPUnit_Framework_TestCase
         $this->assertContains('<meta property="fb:admins" content = "' . $myId . '"/>', $meta->getFacebookAdmin());
     }
 
+    /**
+     * Test SetTag can set standard tags.
+     *
+     * @return void
+     *
+     */
+
+    public function test_settag_works_with_supported_tags()
+    {
+        $meta = New Meta;
+        $meta->setTag('twitter:card','summary');
+
+        $fullMetaText = $meta->dump();
+
+        $this->assertContains('<meta name="twitter:card" content = "summary"/>', $fullMetaText);
+    }
+
+
+    /**
+     * Test SetTag can set custom tags using the third parameter.
+     *
+     * @return void
+     *
+     */
+
+    public function test_settag_works_with_custom_tags()
+    {
+        $meta = New Meta;
+
+        // $meta->setTag('twitter:card','summary');
+
+        $meta->setTag('mood', 'happy','status');
+
+        $fullMetaText = $meta->dump();
+
+        $this->assertContains('<meta status="mood" content = "happy"/>', $fullMetaText);
+    }
+
 
     /**
      * Test twitter summary card works.
