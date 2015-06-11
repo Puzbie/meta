@@ -1,0 +1,24 @@
+{
+    "name": "puzbie/meta",
+    "description": "Meta Tag Manager, with hooks for Laravel 5",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Dominic Lloyd",
+            "email": "contact@puzbie.co.uk"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "illuminate/support": ">=5.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "Puzbie\\Meta\\": "src/"
+        }
+    },
+    "minimum-stability": "stable"
+}
