@@ -9,7 +9,7 @@ Add the package to your `composer.json`:
 ```
 {
     "require": {
-        "puzbie/meta": "~0.1.0"
+        "puzbie/meta": "^1.0"
     }
 }
 ```
