@@ -296,6 +296,27 @@ class Meta
     }
 
     /**
+     * Set tags from an array
+     * @param array $tagsArray
+     *
+     * @return void
+     */
+    public function setTags(array $tagsArray)
+    {
+        foreach ($tagsArray as $tagId => $tag) {
+            $tagContent = null;
+            $tagType = null;
+            if (is_array($tag)) {
+                $tagContent = $tag[0];
+                $tagType = $tag[1];
+            } else {
+                $tagContent = $tag;
+            }
+            $this->setTag($tagId, $tagContent, $tagType);
+        }
+    }
+
+    /**
      * @param $tagId
      *
      * @return string
@@ -313,6 +334,34 @@ class Meta
     }
 
     /**
+     * Get a used tag from the tags array using "dot" notation.
+     * @param $tag
+     * @param  mixed   $default
+     *
+     * @return mixed
+     */
+    public function getTag($tag, $default = null)
+    {
+        if (function_exists('array_get')) { //Laravel framework
+            return array_get($this->tags, $tag);
+        } else {
+            $array = $this->tags;
+            if (is_null($tag)) return $array;
+
+            if (isset($array[$tag])) return $array[$tag];
+
+            foreach (explode('.', $tag) as $segment) {
+                if (!is_array($array) || !array_key_exists($segment, $array)) {
+                    return $default;
+                }
+
+                $array = $array[$segment];
+            }
+            return $array;
+        }
+    }
+
+    /**
      * Return all Meta tags.
      *
      * @return string
@@ -325,6 +374,15 @@ class Meta
             $html .= $this->getMetaTag($key);
         }
         return $html;
+    }
+
+    /**
+     * Return all used tags
+     * @return array
+     */
+    public function getAllTags()
+    {
+        return $this->tags;
     }
 
     /**
