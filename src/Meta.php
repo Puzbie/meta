@@ -42,7 +42,8 @@ class Meta
         $this->title = '';
         $this->html = '';
         $this->extraHtml = '';
-        $this->tagTypes = ['keywords' => 'name',
+        $this->tagTypes = [
+            'keywords' => 'name',
             'description' => 'name',
             'subject' => 'name',
             'copyright' => 'name',
@@ -178,12 +179,22 @@ class Meta
     }
 
     /**
+     * Returns the meta title
      * @return string
      */
 
-    public function getTitle()
+    public function getMetaTitle()
     {
         return '<title>' . $this->title . '</title>' . self::NL;
+    }
+
+    /**
+     * Returns the title value
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->title;
     }
 
     /**
@@ -229,12 +240,23 @@ class Meta
     }
 
     /**
+     * Returns the meta description
+     * @return string
+     */
+
+    public function getMetaDescription()
+    {
+        return $this->getMetaTag('description');
+    }
+
+    /**
+     * Returns the description value
      * @return string
      */
 
     public function getDescription()
     {
-        return $this->getMetaTag('description');
+        return $this->getTag('description.content');
     }
 
     /**
@@ -296,6 +318,27 @@ class Meta
     }
 
     /**
+     * Set tags from an array
+     * @param array $tagsArray
+     *
+     * @return void
+     */
+    public function setTags(array $tagsArray)
+    {
+        foreach ($tagsArray as $tagId => $tag) {
+            $tagContent = null;
+            $tagType = null;
+            if (is_array($tag)) {
+                $tagContent = $tag[0];
+                $tagType = $tag[1];
+            } else {
+                $tagContent = $tag;
+            }
+            $this->setTag($tagId, $tagContent, $tagType);
+        }
+    }
+
+    /**
      * @param $tagId
      *
      * @return string
@@ -310,6 +353,34 @@ class Meta
         }
 
         return '<meta ' . $this->tags[$tagId]['type'] . '="' . $cleanTagId . '" content = "' . $this->tags[$tagId]['content'] . '"/>' . self::NL;
+    }
+
+    /**
+     * Get a used tag from the tags array using "dot" notation.
+     * @param $tag
+     * @param  mixed $default
+     *
+     * @return mixed
+     */
+    public function getTag($tag, $default = null)
+    {
+        if (function_exists('array_get')) { //Laravel framework
+            return array_get($this->tags, $tag, $default);
+        } else {
+            $array = $this->tags;
+            if (is_null($tag)) return $array;
+
+            if (isset($array[$tag])) return $array[$tag];
+
+            foreach (explode('.', $tag) as $segment) {
+                if (!is_array($array) || !array_key_exists($segment, $array)) {
+                    return $default;
+                }
+
+                $array = $array[$segment];
+            }
+            return $array;
+        }
     }
 
     /**
@@ -328,6 +399,15 @@ class Meta
     }
 
     /**
+     * Return all used tags
+     * @return array
+     */
+    public function getAllTags()
+    {
+        return $this->tags;
+    }
+
+    /**
      * Return the title and all Meta tags.
      *
      * @return string
@@ -337,7 +417,7 @@ class Meta
     {
         //return $this->getTitle();
 
-        return $this->getTitle() . $this->getAllMetaTags();
+        return $this->getMetaTitle() . $this->getAllMetaTags();
     }
 
 
@@ -464,7 +544,6 @@ class Meta
 
         foreach ($params['appArray'] as $app) {
             if (is_array($app) && sizeof($app === 4)) {
-
                 if (isset($app['platform'])) {
                     $twitterData['twitter:app:name:' . $app['platform']] = $app['name'];
                     $twitterData['twitter:app:id:' . $app['platform']] = $app['id'];
@@ -489,7 +568,6 @@ class Meta
         if (isset($params['creatorId'])) {
             $twitterData['twitter:creator'] = $params['creatorId'];
         }
-
 
         $this->makeMetaCard($twitterData);
 
