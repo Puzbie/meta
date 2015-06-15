@@ -42,7 +42,8 @@ class Meta
         $this->title = '';
         $this->html = '';
         $this->extraHtml = '';
-        $this->tagTypes = ['keywords' => 'name',
+        $this->tagTypes = [
+            'keywords' => 'name',
             'description' => 'name',
             'subject' => 'name',
             'copyright' => 'name',
@@ -178,12 +179,22 @@ class Meta
     }
 
     /**
+     * Returns the meta title
      * @return string
      */
 
-    public function getTitle()
+    public function getMetaTitle()
     {
         return '<title>' . $this->title . '</title>' . self::NL;
+    }
+
+    /**
+     * Returns the title value
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->title;
     }
 
     /**
@@ -229,12 +240,23 @@ class Meta
     }
 
     /**
+     * Returns the meta description
+     * @return string
+     */
+
+    public function getMetaDescription()
+    {
+        return $this->getMetaTag('description');
+    }
+
+    /**
+     * Returns the description value
      * @return string
      */
 
     public function getDescription()
     {
-        return $this->getMetaTag('description');
+        return $this->getTag('description.content');
     }
 
     /**
@@ -336,14 +358,14 @@ class Meta
     /**
      * Get a used tag from the tags array using "dot" notation.
      * @param $tag
-     * @param  mixed   $default
+     * @param  mixed $default
      *
      * @return mixed
      */
     public function getTag($tag, $default = null)
     {
         if (function_exists('array_get')) { //Laravel framework
-            return array_get($this->tags, $tag);
+            return array_get($this->tags, $tag, $default);
         } else {
             $array = $this->tags;
             if (is_null($tag)) return $array;
@@ -395,7 +417,7 @@ class Meta
     {
         //return $this->getTitle();
 
-        return $this->getTitle() . $this->getAllMetaTags();
+        return $this->getMetaTitle() . $this->getAllMetaTags();
     }
 
 
@@ -522,7 +544,6 @@ class Meta
 
         foreach ($params['appArray'] as $app) {
             if (is_array($app) && sizeof($app === 4)) {
-
                 if (isset($app['platform'])) {
                     $twitterData['twitter:app:name:' . $app['platform']] = $app['name'];
                     $twitterData['twitter:app:id:' . $app['platform']] = $app['id'];
@@ -547,7 +568,6 @@ class Meta
         if (isset($params['creatorId'])) {
             $twitterData['twitter:creator'] = $params['creatorId'];
         }
-
 
         $this->makeMetaCard($twitterData);
 
